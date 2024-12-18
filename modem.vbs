@@ -8,6 +8,7 @@ function DeviceExists {
 }
 
 function RunDiagnostics {
+    # A system.io.ports .net könyvtár kelleni fog ide
     $portName = "COM15" # A modemhez kapcsolódó soros port neve
     $baudRate = 9600   # Átviteli sebesség
     $timeOut = 5000    # Időtúllépés (ms)
