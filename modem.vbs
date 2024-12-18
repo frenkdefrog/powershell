@@ -8,11 +8,31 @@ function DeviceExists {
 }
 
 function RunDiagnostics {
-    # Ez egy példa arra, hogyan lehet szimulálni egy eszközdiagnosztikát. 
-    # Tegyük fel, hogy az eszköznek van egy saját diagnosztikai parancs vagy állapotellenőrző funkciója, amit meghívhatunk.
-    # Az eredmény igaz vagy hamis lehet, ennek módosítására szükség lehet a valós diagnosztikai folyamatnak megfelelően.
-    $result = Test-Connection "google.com" -Count 1 -Quiet
-    return $result
+    $portName = "COM15" # A modemhez kapcsolódó soros port neve
+    $baudRate = 9600   # Átviteli sebesség
+    $timeOut = 5000    # Időtúllépés (ms)
+
+    try {
+        # A soros port inicializálása
+        $port = New-Object System.IO.Ports.SerialPort $portName, $baudRate
+        $port.Open()
+        $port.WriteLine("AT") # AT parancs küldése
+        Start-Sleep -Milliseconds 200 # Kis várakozás a válaszra
+
+        $response = $port.ReadLine() # Válasz olvasása
+        $port.Close()
+
+        if ($response -match "OK") {
+            Write-Host "Connection successful"
+            return $true
+        } else {
+            Write-Host "No valid response from modem"
+            return $false
+        }
+    } catch {
+        Write-Error "Failed to communicate with GSM Modem: $_"
+        return $false
+    }
 }
 
 function Remove-Device {
